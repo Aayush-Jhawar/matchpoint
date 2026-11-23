@@ -1,0 +1,8 @@
+# fastapi/uvicorn come with the Space's gradio install, so they aren't pinned here
+pdfplumber
+pypdfium2
+pillow
+rapidfuzz
+pytesseract
+httpx
+python-multipart
