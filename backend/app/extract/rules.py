@@ -94,7 +94,8 @@ def _line_items(lines):
     items = []
     for line in lines:
         low = line.lower()
-        if re.search(r"total|gst|tax|round|amount chargeable|bill amount|subtotal", low):
+        # skip summary rows; "round off" specifically, since items can be called "round bar"
+        if re.search(r"total|\bc?s?i?gst\b|tax|round\s*off|amount chargeable|bill amount|subtotal", low):
             continue
         toks = [(m.start(), m.group(), to_num(m.group())) for m in NUM_RE.finditer(line)]
         toks = [t for t in toks if t[2] is not None]
