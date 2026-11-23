@@ -1,9 +1,9 @@
-vendor_id,name,address,state,pan,gstin,bank_name,account_no,ifsc,status
-V001,Shree Ganesh Packaging Pvt. Ltd.,"Gat No. 212, Bhosari MIDC, Pune 411026",27,AAMCS2281K,27AAMCS2281K1ZW,"HDFC Bank, Bhosari",50200041127783,HDFC0001342,active
-V002,Deccan Fasteners & Tools,"Shop 7, Sector 10, Pimpri, Pune 411018",27,AAHFD6619Q,27AAHFD6619Q1ZS,"State Bank of India, Pimpri",39912047761,SBIN0011524,active
-V003,Precision Castings India Pvt. Ltd.,"Survey 88, Shapar Industrial Area, Rajkot 360024",24,AAKCP3305R,24AAKCP3305R1Z2,"ICICI Bank, Rajkot",024105008831,ICIC0000241,active
-V004,Sai Industrial Lubricants,"B-41, Ambad MIDC, Nashik 422010",27,ABRPS7712H,27ABRPS7712H1Z3,"Bank of Maharashtra, Ambad",60118842207,MAHB0000415,active
-V005,Bharat Electricals & Controls Pvt. Ltd.,"No. 56, 3rd Phase, Peenya Industrial Area, Bengaluru 560058",29,AACCB9021L,29AACCB9021L1ZH,"Canara Bank, Peenya",0412201008836,CNRB0000412,active
-V006,Coimbatore Bearings Co.,"14/3 Avinashi Road, Peelamedu, Coimbatore 641004",33,AAFFC4458D,33AAFFC4458D1ZS,"Indian Overseas Bank, Peelamedu",117702000004519,IOBA0001177,active
-V007,Nexa Safety Solutions LLP,"Unit 302, Wagle Estate, Thane 400604",27,AAUFN1186B,27AAUFN1186B1Z4,"Axis Bank, Wagle Estate",921020038814472,UTIB0001884,active
-V008,Vardhman Steel Traders,"G.T. Road, Focal Point, Ludhiana 141010",03,AAGFV5530C,03AAGFV5530C1ZM,"Punjab National Bank, Focal Point",0611002100023391,PUNB0061100,active
+vendor_id,name,address,state,pan,gstin,bank_name,account_no,ifsc,status,phone,email
+V001,Shree Ganesh Packaging Pvt. Ltd.,"Gat No. 212, Bhosari MIDC, Pune 411026",27,AAMCS2281K,27AAMCS2281K1ZW,"HDFC Bank, Bhosari",50200041127783,HDFC0001342,active,020-27120458,accounts@shreeganeshpack.in
+V002,Deccan Fasteners & Tools,"Shop 7, Sector 10, Pimpri, Pune 411018",27,AAHFD6619Q,27AAHFD6619Q1ZS,"State Bank of India, Pimpri",39912047761,SBIN0011524,active,020-27475513,deccanfasteners@gmail.com
+V003,Precision Castings India Pvt. Ltd.,"Survey 88, Shapar Industrial Area, Rajkot 360024",24,AAKCP3305R,24AAKCP3305R1Z2,"ICICI Bank, Rajkot",024105008831,ICIC0000241,active,0281-2390176,ar@precisioncastings.co.in
+V004,Sai Industrial Lubricants,"B-41, Ambad MIDC, Nashik 422010",27,ABRPS7712H,27ABRPS7712H1Z3,"Bank of Maharashtra, Ambad",60118842207,MAHB0000415,active,0253-2382904,sai.lubricants@yahoo.co.in
+V005,Bharat Electricals & Controls Pvt. Ltd.,"No. 56, 3rd Phase, Peenya Industrial Area, Bengaluru 560058",29,AACCB9021L,29AACCB9021L1ZH,"Canara Bank, Peenya",0412201008836,CNRB0000412,active,080-28394471,finance@bharatelectricals.com
+V006,Coimbatore Bearings Co.,"14/3 Avinashi Road, Peelamedu, Coimbatore 641004",33,AAFFC4458D,33AAFFC4458D1ZS,"Indian Overseas Bank, Peelamedu",117702000004519,IOBA0001177,active,0422-2571519,accounts@cbebearings.in
+V007,Nexa Safety Solutions LLP,"Unit 302, Wagle Estate, Thane 400604",27,AAUFN1186B,27AAUFN1186B1Z4,"Axis Bank, Wagle Estate",921020038814472,UTIB0001884,active,022-25820937,billing@nexasafety.in
+V008,Vardhman Steel Traders,"G.T. Road, Focal Point, Ludhiana 141010",03,AAGFV5530C,03AAGFV5530C1ZM,"Punjab National Bank, Focal Point",0611002100023391,PUNB0061100,active,0161-2672218,vardhmansteel.ldh@gmail.com

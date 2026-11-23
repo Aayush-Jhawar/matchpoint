@@ -35,12 +35,24 @@ _V = [
      "Punjab National Bank, Focal Point", "0611002100023391", "PUNB0061100"),
 ]
 
+# contact on file: the number AP calls back on when bank details change
+_CONTACT = {
+    "V001": ("020-27120458", "accounts@shreeganeshpack.in"),
+    "V002": ("020-27475513", "deccanfasteners@gmail.com"),
+    "V003": ("0281-2390176", "ar@precisioncastings.co.in"),
+    "V004": ("0253-2382904", "sai.lubricants@yahoo.co.in"),
+    "V005": ("080-28394471", "finance@bharatelectricals.com"),
+    "V006": ("0422-2571519", "accounts@cbebearings.in"),
+    "V007": ("022-25820937", "billing@nexasafety.in"),
+    "V008": ("0161-2672218", "vardhmansteel.ldh@gmail.com"),
+}
+
 VENDORS = []
 for vid, name, addr, st, pan, bank, acct, ifsc in _V:
     VENDORS.append({
         "vendor_id": vid, "name": name, "address": addr, "state": st, "pan": pan,
         "gstin": make_gstin(st, pan), "bank_name": bank, "account_no": acct, "ifsc": ifsc,
-        "status": "active",
+        "status": "active", "phone": _CONTACT[vid][0], "email": _CONTACT[vid][1],
     })
 V = {v["vendor_id"]: v for v in VENDORS}
 

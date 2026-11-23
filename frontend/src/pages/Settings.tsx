@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
+import { PageHeader, toast } from "../components";
 
 const ROWS: [string, string, string][] = [
   ["price_tolerance_pct", "Price tolerance (%)", "How far a unit price may sit above the PO before it needs approval."],
@@ -21,16 +22,17 @@ export default function Settings({ health }: { health: { llm: string | null; ocr
 
   async function save() {
     setS(await api.saveSettings(s!));
-    setMsg("Saved. New runs use these values.");
+    setMsg("");
+    toast("Settings saved. New runs use these values.");
   }
 
   if (!s) return <div className="muted pad">Loading…</div>;
   return (
-    <div className="dash settings">
-      <h1>Settings</h1>
-      <section>
+    <div className="page settings">
+      <PageHeader title="Settings" sub="Matching policy and demo controls. Changes apply to the next invoice processed." />
+      <section className="card">
         <h3>Tolerances</h3>
-        <table className="grid form">
+        <table className="grid form plain">
           <tbody>
             {ROWS.map(([k, label, help]) => (
               <tr key={k}>
@@ -66,7 +68,7 @@ export default function Settings({ health }: { health: { llm: string | null; ocr
         </div>
       </section>
 
-      <section>
+      <section className="card">
         <h3>Demo data</h3>
         <p className="muted">
           Reset puts the vendor master, POs, goods receipts and the ledger back to their starting state and clears the run
@@ -78,7 +80,7 @@ export default function Settings({ health }: { health: { llm: string | null; ocr
             onClick={async () => {
               await api.reset();
               setS(await api.settings());
-              setMsg("Demo data reset.");
+              toast("Demo data reset: vendors, POs, receipts and ledger are back to the start.");
             }}
           >
             Reset demo data
@@ -87,7 +89,7 @@ export default function Settings({ health }: { health: { llm: string | null; ocr
             className="btn ghost"
             onClick={async () => {
               await api.clearCache();
-              setMsg("Extraction cache cleared. Next runs read the files again.");
+              toast("Extraction cache cleared.");
             }}
           >
             Clear extraction cache

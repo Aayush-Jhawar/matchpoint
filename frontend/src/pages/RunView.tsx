@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, go, inr, Payload, RunDetail, shortTime, Stage, STAGE_ORDER } from "../api";
-import { Chip, Conf, Dot } from "../components";
+import { Chip, Conf, Dot, PageHeader } from "../components";
 
 const FIELD_LABELS: Record<string, string> = {
   vendor_name: "Vendor name",
@@ -89,28 +89,33 @@ export default function RunView({ id }: { id: string }) {
 
   return (
     <div className="runview">
-      <div className="runhead">
-        <a href="#/" className="link">
-          ← Process
-        </a>
-        <h1 className="mono">{run.file_name}</h1>
-        <div className="meta">
-          <span>Run {run.id}</span>
-          <span>{shortTime(run.created_at)}</span>
-          {run.method && <span>read with {run.method}</span>}
-          {run.duration_ms != null && <span>{(run.duration_ms / 1000).toFixed(1)} s</span>}
-          {run.parent_run && (
-            <a className="link" href={`#/run/${run.parent_run}`}>
-              re-run of {run.parent_run}
-            </a>
-          )}
-          {run.children.length > 0 && (
-            <a className="link warnlink" href={`#/run/${run.children[run.children.length - 1]}`}>
-              superseded by a later re-run →
-            </a>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        crumbs={[["Process invoice", "#/"]]}
+        title={<span className="mono">{run.file_name}</span>}
+        sub={
+          <span className="meta">
+            <span>Run {run.id}</span>
+            <span>{shortTime(run.created_at)}</span>
+            {run.method && <span>read with {run.method}</span>}
+            {run.duration_ms != null && <span>{run.duration_ms < 1000 ? `${run.duration_ms} ms` : `${(run.duration_ms / 1000).toFixed(1)} s`}</span>}
+            {run.parent_run && (
+              <a className="link" href={`#/run/${run.parent_run}`}>
+                re-run of {run.parent_run}
+              </a>
+            )}
+            {run.children.length > 0 && (
+              <a className="link warnlink" href={`#/run/${run.children[run.children.length - 1]}`}>
+                superseded by a later re-run →
+              </a>
+            )}
+          </span>
+        }
+        actions={
+          <a className="btn ghost" href="#/">
+            Process another
+          </a>
+        }
+      />
 
       <div className="split">
         <div className="doc">
@@ -193,7 +198,9 @@ function DecisionCard({ run, p }: { run: RunDetail; p: Payload }) {
     Object.fromEntries((p.needs_confirmation || []).map((k) => [k, String(ext[k]?.value ?? "")]))
   );
   const [busy, setBusy] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const superseded = run.children.length > 0;
+  const shown = showAll ? blocking : blocking.slice(0, 1);
 
   async function rerun() {
     setBusy(true);
@@ -219,7 +226,7 @@ function DecisionCard({ run, p }: { run: RunDetail; p: Payload }) {
 
       {blocking.length > 0 && (
         <ul className="reasons">
-          {blocking.map((f, i) => (
+          {shown.map((f, i) => (
             <li key={i} className={f.level}>
               <div className="rt">
                 <b>{f.title}</b>
@@ -228,6 +235,13 @@ function DecisionCard({ run, p }: { run: RunDetail; p: Payload }) {
               <p>{f.detail}</p>
             </li>
           ))}
+          {blocking.length > 1 && (
+            <li className="more">
+              <button className="linkbtn" onClick={() => setShowAll(!showAll)}>
+                {showAll ? "Show only the main reason" : `Show ${blocking.length - 1} more issue${blocking.length > 2 ? "s" : ""} found on this invoice`}
+              </button>
+            </li>
+          )}
         </ul>
       )}
       {notes.length > 0 && (
@@ -273,8 +287,8 @@ function Details({ p }: { p: Payload }) {
   const bal = p.po_balance;
   return (
     <div className="details">
-      <section>
-        <h3>What was read from the invoice</h3>
+      <section className="card flush">
+        <h3 className="cardh">What was read from the invoice</h3>
         <table className="grid fields">
           <thead>
             <tr>
@@ -302,8 +316,8 @@ function Details({ p }: { p: Payload }) {
       </section>
 
       {p.line_table?.length > 0 && (
-        <section>
-          <h3>Lines against PO and goods receipts</h3>
+        <section className="card flush">
+          <h3 className="cardh">Lines against PO and goods receipts</h3>
           <table className="grid lines">
             <thead>
               <tr>
@@ -340,8 +354,13 @@ function Details({ p }: { p: Payload }) {
       )}
 
       {bal && (
-        <section>
-          <h3>{bal.po_no} balance</h3>
+        <section className="card">
+          <div className="cardrow">
+            <h3>{bal.po_no} balance</h3>
+            <a className="link small" href={`#/pos/${bal.po_no}`}>
+              Open PO →
+            </a>
+          </div>
           <BalanceBar bal={bal} />
         </section>
       )}

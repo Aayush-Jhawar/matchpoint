@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config, db, pipeline
+from . import config, db, masterdata, pipeline
 from .extract import llm, pdftext
 
 app = FastAPI(
@@ -18,6 +18,7 @@ app = FastAPI(
     contact={"name": "Aayush Jhawar", "url": "https://github.com/Aayush-Jhawar"},
 )
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.include_router(masterdata.router)
 db.init()
 
 SAMPLE_NOTES = {
@@ -183,22 +184,6 @@ def stats():
         "avg_ms": round(sum(r["duration_ms"] or 0 for r in rs) / n) if n else 0,
         "blocked_value": round(sum((r["total"] or 0) for r in by["REJECT"]), 2),
     }
-
-
-@app.get("/api/pos")
-def pos():
-    out = []
-    for po in db.q("SELECT p.*, v.name vendor FROM purchase_orders p JOIN vendors v USING (vendor_id) "
-                   "WHERE p.status='open' ORDER BY p.po_no"):
-        billed = db.q1("SELECT COALESCE(SUM(taxable_value),0) s FROM ledger WHERE po_no=? AND status IN ('paid','approved')",
-                       (po["po_no"],))["s"]
-        held = db.q1("SELECT COALESCE(SUM(taxable_value),0) s FROM ledger WHERE po_no=? AND status='on_hold'",
-                     (po["po_no"],))["s"]
-        rec = db.q1("SELECT COALESCE(SUM(g.qty_received*l.rate),0) s FROM grn g JOIN po_lines l "
-                    "ON g.po_no=l.po_no AND g.line_no=l.line_no WHERE g.po_no=?", (po["po_no"],))["s"]
-        out.append({"po_no": po["po_no"], "vendor": po["vendor"], "value": po["taxable_value"], "billed": billed,
-                    "on_hold": held, "received_value": rec})
-    return out
 
 
 @app.get("/api/master")

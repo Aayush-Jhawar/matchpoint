@@ -11,7 +11,9 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS buyer (name TEXT, address TEXT, gstin TEXT);
 CREATE TABLE IF NOT EXISTS vendors (
     vendor_id TEXT PRIMARY KEY, name TEXT, address TEXT, state TEXT, pan TEXT, gstin TEXT,
-    bank_name TEXT, account_no TEXT, ifsc TEXT, status TEXT);
+    bank_name TEXT, account_no TEXT, ifsc TEXT, status TEXT, phone TEXT, email TEXT);
+CREATE TABLE IF NOT EXISTS vendor_changes (
+    vendor_id TEXT, field TEXT, old_value TEXT, new_value TEXT, changed_at TEXT, note TEXT);
 CREATE TABLE IF NOT EXISTS purchase_orders (
     po_no TEXT PRIMARY KEY, vendor_id TEXT, po_date TEXT, status TEXT, taxable_value REAL);
 CREATE TABLE IF NOT EXISTS po_lines (
@@ -70,7 +72,8 @@ def reset(keep_cache=True):
     from .normalize import canonical_invoice_no
     with _lock, conn() as c:
         c.executescript(SCHEMA)
-        for t in ["buyer", "vendors", "purchase_orders", "po_lines", "grn", "ledger", "ledger_lines",
+        _migrate(c)
+        for t in ["buyer", "vendors", "vendor_changes", "purchase_orders", "po_lines", "grn", "ledger", "ledger_lines",
                   "runs", "run_events", "settings"] + ([] if keep_cache else ["extraction_cache"]):
             c.execute(f"DELETE FROM {t}")
         c.execute("DELETE FROM sqlite_sequence WHERE name='ledger'") if c.execute(
@@ -97,9 +100,18 @@ def reset(keep_cache=True):
             c.execute("INSERT INTO settings VALUES (?,?)", (k, json.dumps(v)))
 
 
+def _migrate(c):
+    # databases created before vendors had contact fields
+    cols = {r[1] for r in c.execute("PRAGMA table_info(vendors)")}
+    for col in ("phone", "email"):
+        if col not in cols:
+            c.execute(f"ALTER TABLE vendors ADD COLUMN {col} TEXT")
+
+
 def init():
     with conn() as c:
         c.executescript(SCHEMA)
+        _migrate(c)
         empty = c.execute("SELECT COUNT(*) FROM vendors").fetchone()[0] == 0
     if empty:
         reset()

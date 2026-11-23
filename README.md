@@ -20,6 +20,18 @@ Each invoice runs through ten stages. You can watch them run in the UI.
 9. **Decide**: a fixed precedence of rules picks the decision and the owner
 10. **Record**: approved and held invoices go into the ledger, so the next invoice sees them
 
+## Master data
+
+Vendors, purchase orders and goods receipts can be maintained in the app, the way an AP or procurement team would.
+In a real deployment these would sync from the ERP.
+
+- **Vendors**: GSTIN validated as you type (format and checksum), with state and PAN read from it. The account number is
+  entered twice and can't be pasted. Changing bank details requires confirming a call-back to the phone number on file,
+  and every change goes into the vendor's history.
+- **Purchase orders**: numbered in sequence, line items with HSN and GST rate, running totals. Close or reopen a PO.
+- **Goods receipts**: record what arrived against each line. Receiving more than was ordered is blocked. Invoices
+  are only approved for quantities actually received.
+
 ## The one design decision that matters
 
 **The model reads; the code decides.** An LLM (Gemini or Claude) is only used to turn a messy PDF into
@@ -64,7 +76,9 @@ docker run -p 7860:7860 -e GEMINI_API_KEY=... matchpoint
 
 The live version runs this same Dockerfile on Render's free tier, built from this repo's `main` branch,
 with `GEMINI_API_KEY` set as an environment variable. Render sets `$PORT` and the container picks it up.
-Free instances sleep when idle, so the first request after a while can take up to a minute.
+Free instances sleep when idle, so the first request after a while can take up to a minute. They also have no
+persistent disk: anything added in the app (runs, vendors, POs, receipts) resets to the demo data when the
+instance restarts. In production the ledger and master data would sit in Postgres.
 
 Tests: `cd backend && python tests/test_scenarios.py` runs all seven invoices in order and checks each decision.
 

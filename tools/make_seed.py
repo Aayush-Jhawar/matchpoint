@@ -17,7 +17,8 @@ def write(name, rows, cols):
 
 write("buyer.csv", [BUYER], ["name", "address", "gstin"])
 write("vendors.csv", VENDORS,
-      ["vendor_id", "name", "address", "state", "pan", "gstin", "bank_name", "account_no", "ifsc", "status"])
+      ["vendor_id", "name", "address", "state", "pan", "gstin", "bank_name", "account_no", "ifsc", "status",
+       "phone", "email"])
 
 pos, lines = [], []
 for po_id, vid, date, status, ls in PURCHASE_ORDERS:

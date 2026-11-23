@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, Decision, DECISION_TEXT, go, inr, RunRow, shortTime } from "../api";
-import { Chip, Empty } from "../components";
+import { Chip, Empty, Icon, PageHeader } from "../components";
 
 type Filter = "ALL" | Decision;
 
@@ -33,8 +33,8 @@ export default function Dashboard() {
   const maxOwner = Math.max(1, ...owners.map(([, n]) => n));
 
   return (
-    <div className="dash">
-      <h1>Dashboard</h1>
+    <div className="page">
+      <PageHeader title="Runs" sub="Every invoice processed, what was decided, and who's holding what." />
       {stats && (
         <div className="kpis">
           <div className="kpi">
@@ -75,7 +75,7 @@ export default function Dashboard() {
       )}
 
       <div className="toolbar">
-        <div className="filters">
+        <div className="seg">
           {(["ALL", "AUTO_APPROVE", "APPROVE_WITH_NOTE", "HOLD", "REJECT"] as Filter[]).map((f) => (
             <button key={f} className={filter === f ? "on" : ""} onClick={() => setFilter(f)}>
               {f === "ALL" ? "All" : DECISION_TEXT[f]}
@@ -87,13 +87,16 @@ export default function Dashboard() {
           <input type="checkbox" checked={showSuperseded} onChange={(e) => setShowSuperseded(e.target.checked)} /> show
           superseded runs
         </label>
-        <input className="search" placeholder="Search vendor, invoice, PO" value={q} onChange={(e) => setQ(e.target.value)} />
+        <div className="searchbox">
+          <Icon name="search" />
+          <input placeholder="Search vendor, invoice, PO" value={q} onChange={(e) => setQ(e.target.value)} />
+        </div>
       </div>
 
       {rows.length === 0 ? (
         <Empty>No runs yet. Process an invoice from the Process tab.</Empty>
       ) : (
-        <table className="grid runs">
+        <div className="tablewrap"><table className="grid clickable runs">
           <thead>
             <tr>
               <th>When</th>
@@ -122,7 +125,7 @@ export default function Dashboard() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
     </div>
   );

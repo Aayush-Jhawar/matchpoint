@@ -88,11 +88,35 @@ export interface RunDetail extends RunRow {
   children: string[];
 }
 
+export class ApiError extends Error {
+  fields: Record<string, string>;
+  constructor(message: string, fields: Record<string, string> = {}) {
+    super(message);
+    this.fields = fields;
+  }
+}
+
 async function j<T>(url: string, init?: RequestInit): Promise<T> {
   const r = await fetch(url, init);
-  if (!r.ok) throw new Error(`${r.status} ${await r.text()}`);
+  if (!r.ok) {
+    let body: any = null;
+    try {
+      body = await r.json();
+    } catch {
+      /* not json */
+    }
+    const fields = body?.detail?.errors || {};
+    const msg = typeof body?.detail === "string" ? body.detail : Object.values(fields)[0] || `Request failed (${r.status})`;
+    throw new ApiError(String(msg), fields);
+  }
   return r.json();
 }
+
+const send = (method: string, body: any): RequestInit => ({
+  method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(body),
+});
 
 export const api = {
   health: () => j<{ llm: string | null; ocr: boolean; stage_delay_ms: number }>("/api/health"),
@@ -100,7 +124,16 @@ export const api = {
   runs: () => j<RunRow[]>("/api/runs"),
   run: (id: string) => j<RunDetail>(`/api/runs/${id}`),
   stats: () => j<any>("/api/stats"),
-  pos: () => j<any[]>("/api/pos"),
+  pos: (status = "all") => j<any[]>(`/api/pos?status=${status}`),
+  po: (no: string) => j<any>(`/api/pos/${encodeURIComponent(no)}`),
+  nextPo: () => j<{ po_no: string }>("/api/pos/next-number"),
+  createPo: (body: any) => j<any>("/api/pos", send("POST", body)),
+  receive: (no: string, body: any) => j<any>(`/api/pos/${encodeURIComponent(no)}/receipts`, send("POST", body)),
+  setPoStatus: (no: string, status: string) => j<any>(`/api/pos/${encodeURIComponent(no)}/status`, send("POST", { status })),
+  vendors: () => j<any[]>("/api/vendors"),
+  vendor: (id: string) => j<any>(`/api/vendors/${id}`),
+  createVendor: (body: any) => j<any>("/api/vendors", send("POST", body)),
+  updateVendor: (id: string, body: any) => j<any>(`/api/vendors/${id}`, send("PUT", body)),
   settings: () => j<Record<string, any>>("/api/settings"),
   saveSettings: (s: Record<string, any>) =>
     j<Record<string, any>>("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(s) }),
@@ -123,6 +156,17 @@ export const api = {
 export function inr(x: number | null | undefined, decimals = 2) {
   if (x === null || x === undefined || isNaN(x)) return "–";
   return "₹" + x.toLocaleString("en-IN", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+export function fmtDate(iso: string | null | undefined) {
+  if (!iso) return "–";
+  const d = new Date(iso.length === 10 ? iso + "T00:00:00" : iso);
+  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+export function today() {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
 export function shortTime(iso: string | null) {

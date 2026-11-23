@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { api, go, inr, RunRow, shortTime } from "../api";
-import { Chip, Empty } from "../components";
+import { Chip, Empty, Icon, PageHeader } from "../components";
 
 export default function Inbox() {
   const [samples, setSamples] = useState<{ name: string; note: string }[]>([]);
@@ -33,13 +33,12 @@ export default function Inbox() {
   }
 
   return (
-    <div className="inbox">
+    <div className="page">
+      <PageHeader
+        title="Process an invoice"
+        sub="Upload a vendor invoice. It's read, checked against the PO, goods receipts and everything already billed, and comes back with a decision and the reasons for it."
+      />
       <section>
-        <h1>Process an invoice</h1>
-        <p className="lede">
-          Drop a vendor invoice (PDF or photo). It is read, checked against the PO, goods receipts and everything
-          already billed, and comes back with a decision and the reasons for it.
-        </p>
         <div
           className={`drop ${drag ? "over" : ""}`}
           onDragOver={(e) => {
@@ -55,15 +54,25 @@ export default function Inbox() {
           onClick={() => input.current?.click()}
         >
           <input ref={input} type="file" accept=".pdf,.png,.jpg,.jpeg" hidden onChange={(e) => onFiles(e.target.files)} />
-          {busy ? <span>Starting {busy}…</span> : <span>Drop invoice here, or click to choose a file</span>}
+          <span className="dropicon">
+            <Icon name="upload" size={22} />
+          </span>
+          {busy ? (
+            <b>Starting {busy}…</b>
+          ) : (
+            <>
+              <b>Drop an invoice here, or click to choose a file</b>
+              <span className="muted small">PDF, JPG or PNG · scanned and phone photos work too</span>
+            </>
+          )}
         </div>
         {err && <div className="error">{err}</div>}
 
-        <h2>Recent runs</h2>
+        <h2 className="sechead">Recent runs</h2>
         {runs.length === 0 ? (
           <Empty>Nothing processed yet. Upload an invoice above or run one of the samples below.</Empty>
         ) : (
-          <table className="grid runs">
+          <div className="tablewrap"><table className="grid clickable">
             <thead>
               <tr>
                 <th>When</th>
@@ -88,7 +97,7 @@ export default function Inbox() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
         {runs.length > 0 && (
           <p>
@@ -98,8 +107,10 @@ export default function Inbox() {
           </p>
         )}
 
-        <h2>Sample invoices</h2>
-        <table className="grid samples">
+        <h2 className="sechead">
+          Sample invoices <span className="muted small">seven test cases, run them in order</span>
+        </h2>
+        <div className="tablewrap"><table className="grid samples">
           <tbody>
             {samples.map((s) => (
               <tr key={s.name}>
@@ -116,7 +127,7 @@ export default function Inbox() {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       </section>
     </div>
   );
