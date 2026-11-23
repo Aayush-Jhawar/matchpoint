@@ -12,7 +12,7 @@ export default function Inbox() {
 
   useEffect(() => {
     api.samples().then(setSamples).catch(() => {});
-    api.runs().then((r) => setRuns(r.slice(0, 8))).catch(() => {});
+    api.runs().then((r) => setRuns(r.slice(0, 6))).catch(() => {});
   }, []);
 
   async function start(p: Promise<{ id: string }>, label: string) {
@@ -59,7 +59,46 @@ export default function Inbox() {
         </div>
         {err && <div className="error">{err}</div>}
 
-        <h2>Test invoices</h2>
+        <h2>Recent runs</h2>
+        {runs.length === 0 ? (
+          <Empty>Nothing processed yet. Upload an invoice above or run one of the samples below.</Empty>
+        ) : (
+          <table className="grid runs">
+            <thead>
+              <tr>
+                <th>When</th>
+                <th>File</th>
+                <th>Vendor</th>
+                <th>Invoice</th>
+                <th className="right">Amount</th>
+                <th>Decision</th>
+              </tr>
+            </thead>
+            <tbody>
+              {runs.map((r) => (
+                <tr key={r.id} onClick={() => go(`#/run/${r.id}`)}>
+                  <td className="muted nowrap">{shortTime(r.created_at)}</td>
+                  <td className="mono">{r.file_name}</td>
+                  <td>{r.vendor_name || "–"}</td>
+                  <td className="mono">{r.invoice_no || "–"}</td>
+                  <td className="right mono">{inr(r.total, 0)}</td>
+                  <td>
+                    <Chip d={r.state === "done" ? r.decision : null} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {runs.length > 0 && (
+          <p>
+            <a href="#/dashboard" className="link">
+              All runs and totals on the dashboard →
+            </a>
+          </p>
+        )}
+
+        <h2>Sample invoices</h2>
         <table className="grid samples">
           <tbody>
             {samples.map((s) => (
@@ -79,31 +118,6 @@ export default function Inbox() {
           </tbody>
         </table>
       </section>
-
-      <aside>
-        <h2>Recent runs</h2>
-        {runs.length === 0 && <Empty>Nothing processed yet.</Empty>}
-        <ul className="recent">
-          {runs.map((r) => (
-            <li key={r.id} onClick={() => go(`#/run/${r.id}`)}>
-              <div className="row1">
-                <span>{r.vendor_name || r.file_name}</span>
-                <Chip d={r.state === "done" ? r.decision : null} />
-              </div>
-              <div className="row2">
-                <span className="mono">{r.invoice_no || "–"}</span>
-                <span>{inr(r.total, 0)}</span>
-                <span className="muted">{shortTime(r.created_at)}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-        {runs.length > 0 && (
-          <a href="#/dashboard" className="link">
-            All runs →
-          </a>
-        )}
-      </aside>
     </div>
   );
 }

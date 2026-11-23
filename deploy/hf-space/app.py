@@ -1,10 +1,24 @@
 """
 Hugging Face Space entry point.
 
-Gradio Spaces just run `python app.py` and expect a web server on port 7860.
-Instead of a Gradio UI, this downloads Matchpoint from GitHub and serves its own
-FastAPI app (API + prebuilt React UI) on that port. GitHub stays the only copy of the code.
+Free Spaces now run on ZeroGPU, which only starts an app that registers at least
+one @spaces.GPU function, so `spaces` is imported first, before anything else.
+Matchpoint itself never needs a GPU: the probe below is only wired to a small
+Gradio page at /gradio so ZeroGPU can see it.
+
+The app is downloaded from GitHub at startup (GitHub stays the only copy of the
+code) and its FastAPI server, API plus prebuilt React UI, is served on port 7860.
 """
+try:
+    import spaces  # must come before other imports on ZeroGPU
+
+    @spaces.GPU(duration=10)
+    def gpu_probe() -> str:
+        return "ok"
+except ImportError:  # running locally / on CPU hardware
+    def gpu_probe() -> str:
+        return "ok"
+
 import io
 import os
 import subprocess
@@ -12,6 +26,7 @@ import sys
 import zipfile
 from pathlib import Path
 
+import gradio as gr
 import httpx
 import uvicorn
 
@@ -44,6 +59,15 @@ os.environ.setdefault("STAGE_DELAY_MS", "450")
 sys.path.insert(0, str(src / "backend"))
 
 from app.main import app  # noqa: E402
+
+with gr.Blocks(title="Matchpoint runtime") as probe_page:
+    gr.Markdown("Matchpoint runs at the [root of this Space](/). This page only exists for the ZeroGPU runtime check.")
+    out = gr.Textbox(label="GPU probe")
+    gr.Button("Run GPU probe").click(gpu_probe, outputs=out)
+
+app = gr.mount_gradio_app(app, probe_page, path="/gradio")
+# Matchpoint has a catch-all route for its single-page UI; put the Gradio mount ahead of it
+app.router.routes.insert(0, app.router.routes.pop())
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7860)
