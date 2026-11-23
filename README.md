@@ -55,12 +55,16 @@ Needs Python 3.11+ and Node 18+. Copy `.env.example` to `.env` and add a `GEMINI
 is enough) if you want LLM extraction. Without one, everything except the photo scan works out of the
 box. For the scan you'll need either the key or tesseract installed.
 
-Docker (this is also how it's deployed):
+Docker:
 
 ```
 docker build -t matchpoint .
 docker run -p 7860:7860 -e GEMINI_API_KEY=... matchpoint
 ```
+
+The live version runs this same Dockerfile on Render's free tier, built from this repo's `main` branch,
+with `GEMINI_API_KEY` set as an environment variable. Render sets `$PORT` and the container picks it up.
+Free instances sleep when idle, so the first request after a while can take up to a minute.
 
 Tests: `cd backend && python tests/test_scenarios.py` runs all seven invoices in order and checks each decision.
 
