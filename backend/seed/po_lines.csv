@@ -1,0 +1,19 @@
+po_no,line_no,item,hsn,qty,unit,rate,gst_rate
+PO-2026-0412,1,Corrugated box 5-ply 600x400x400 mm,4819,1200,nos,48.5,18
+PO-2026-0412,2,PP strapping roll 12 mm,3920,40,roll,610.0,18
+PO-2026-0405,1,Deep groove ball bearing 6205-2RS,8482,500,nos,186.0,18
+PO-2026-0405,2,Taper roller bearing 30206,8482,200,nos,412.0,18
+PO-2026-0398,1,"CI pump housing, machined (drg PH-220 rev C)",8413,400,nos,1250.0,18
+PO-2026-0377,1,Hex bolt M10x40 gr 8.8 zinc plated,7318,5000,nos,6.4,18
+PO-2026-0377,2,Nylock nut M10,7318,5000,nos,2.1,18
+PO-2026-0377,3,Plain washer M10,7318,5000,nos,0.85,18
+PO-2026-0409,1,MCB 32A 4-pole C-curve,8536,60,nos,1840.0,18
+PO-2026-0409,2,Power contactor 25A 415V,8536,40,nos,2275.0,18
+PO-2026-0409,3,Control cable 1.5 sqmm 4C (100 m roll),8544,12,roll,6350.0,18
+PO-2026-0420,1,Hydraulic oil ISO VG 68 (20 L),2710,30,can,3150.0,18
+PO-2026-0420,2,Soluble cutting fluid (20 L),3403,20,can,2480.0,18
+PO-2026-0416,1,Lithium grease EP2 (18 kg bucket),3403,25,bucket,4120.0,18
+PO-2026-0414,1,"Safety shoes, steel toe (pair)",6403,150,pair,1180.0,18
+PO-2026-0414,2,Cut-resistant gloves level 5 (pair),6116,300,pair,145.0,18
+PO-2026-0341,1,Corrugated box 3-ply 400x300x300 mm,4819,2000,nos,22.0,18
+PO-2026-0352,1,Deep groove ball bearing 6204-2RS,8482,300,nos,152.0,18

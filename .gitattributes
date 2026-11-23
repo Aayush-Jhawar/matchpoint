@@ -1,0 +1,6 @@
+# keep code with LF everywhere; never touch binaries
+* text=auto eol=lf
+*.bat text eol=crlf
+*.pdf binary
+*.png binary
+*.jpg binary
